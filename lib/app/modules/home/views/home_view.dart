@@ -7,7 +7,6 @@ import 'package:quranapps_getx/app/routes/app_pages.dart';
 import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,26 +18,25 @@ class HomeView extends GetView<HomeController> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (!asyncSnapshot.hasData) { //jika snapshot tidak memiliki data
+          if (!asyncSnapshot.hasData) {
             return Text("tidak ada data");
-            
           }
 
-          List dataSurah = asyncSnapshot.data; //ambil data dari snapshot buat ke bentuk list agar dapat length
+          List dataSurah = asyncSnapshot.data;
 
           return ListView.builder(
-            itemCount: dataSurah.length, //jumlah data
+            itemCount: dataSurah.length,
             itemBuilder: (context, index) {
-              Surah surah = dataSurah[index]; //ambil data per index tipenya model
+              Surah surah = dataSurah[index];
               return ListTile(
-                onTap: () => Get.toNamed(Routes.DETAIL, arguments: surah),
+                onTap: () => Get.toNamed(Routes.DETAIL, arguments: surah), //pindah + lempar data
                 leading: CircleAvatar(child: Text("${index + 1}")),
                 title: Text("${surah.name}"),
                 subtitle: Text("${surah.numberOfAyah} | ${surah.type}"),
-                trailing: Text("${surah.nameTranslations.ar}",style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold
-                ),),
+                trailing: Text(
+                  "${surah.nameTranslations.ar}",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               );
             },
           );
