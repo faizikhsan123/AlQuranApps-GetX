@@ -8,6 +8,9 @@ environment:
 dependencies: 
   cupertino_icons: ^1.0.8
   get: 4.7.3
+  http: 1.6.0
+  lottie: 3.3.2
+  introduction_screen: 4.0.0
   flutter: 
     sdk: flutter
 
@@ -17,5 +20,7 @@ dev_dependencies:
     sdk: flutter
 
 flutter: 
+  assets: 
+    - assets/lotties/
   uses-material-design: true
 

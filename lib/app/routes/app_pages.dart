@@ -1,7 +1,11 @@
 import 'package:get/get.dart';
 
+import '../modules/detail/bindings/detail_binding.dart';
+import '../modules/detail/views/detail_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
+import '../modules/intro/bindings/intro_binding.dart';
+import '../modules/intro/views/intro_view.dart';
 
 part 'app_routes.dart';
 
@@ -13,8 +17,18 @@ class AppPages {
   static final routes = [
     GetPage(
       name: _Paths.HOME,
-      page: () => const HomeView(),
+      page: () => HomeView(),
       binding: HomeBinding(),
+    ),
+    GetPage(
+      name: _Paths.INTRO,
+      page: () => IntroView(),
+      binding: IntroBinding(),
+    ),
+    GetPage(
+      name: _Paths.DETAIL,
+      page: () =>  DetailView(),
+      binding: DetailBinding(),
     ),
   ];
 }
