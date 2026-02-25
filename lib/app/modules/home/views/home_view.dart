@@ -129,6 +129,7 @@ class HomeView extends GetView<HomeController> {
                 tabs: [
                   //widget Tabbar
                   Tab(text: "Surah"),
+
                   Tab(text: "Bookmark"),
                 ],
               ),
@@ -179,7 +180,7 @@ class HomeView extends GetView<HomeController> {
                         );
                       },
                     ),
-                    Center(child: Text("Bookmark")),
+                    Center(child: Text("BOOkMark")),
                   ],
                 ),
               ),

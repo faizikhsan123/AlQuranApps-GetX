@@ -7,7 +7,9 @@ import 'package:quranapps_getx/app/data/models/DetailSurah.dart';
 import 'package:quranapps_getx/app/data/models/Surah.dart';
 
 DetailSurah? detail;
-final player = AudioPlayer(); //inisialize audioplayer
+final player = AudioPlayer(); 
+
+RxString kondisiAudio = 'stop'.obs; //kondisi awal audio
 
 class DetailController extends GetxController {
   Surah idParam = Get.arguments;
@@ -32,10 +34,11 @@ class DetailController extends GetxController {
 
   Future playAudio(String url) async {
     try {
+      kondisiAudio.value = 'play';
       await player.setUrl(url);
       await player.play();
+      kondisiAudio.value = 'play';
     } on PlayerException catch (e) {
-      // Playback failed
       Get.defaultDialog(title: 'Error', middleText: '"Error code: ${e.code}"');
 
       Get.defaultDialog(
@@ -48,16 +51,31 @@ class DetailController extends GetxController {
         middleText: '"Connection aborted: ${e.message}"',
       );
     } catch (e) {
-      // Fallback for all other errors
       Get.defaultDialog(title: 'Error', middleText: 'An error occured: $e');
     }
-
-    // Listening to errors during playback (e.g. lost network connection)
     player.errorStream.listen((PlayerException e) {
       print('Error code: ${e.code}');
       print('Error message: ${e.message}');
       print('AudioSource index: ${e.index}');
     });
+  }
+
+  Future stopAudio() async {
+    //stop audio
+    await player.stop();
+    kondisiAudio.value = 'stop';
+  }
+
+  Future pauseAudio() async {
+    //pause audio
+    await player.pause();
+    kondisiAudio.value = 'pause';
+  }
+
+  Future resumeAudio() async {
+    //pause audio
+    kondisiAudio.value = 'play';
+    await player.play();
   }
 
   @override
