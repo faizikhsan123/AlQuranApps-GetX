@@ -7,12 +7,11 @@ import 'package:quranapps_getx/app/data/models/Surah.dart';
 import '../controllers/detail_controller.dart';
 
 class DetailView extends GetView<DetailController> {
-  Surah dataParam = Get.arguments;
-
   @override
   Widget build(BuildContext context) {
+    Surah dataParameter = Get.arguments;
     return Scaffold(
-      appBar: AppBar(title: Text("${dataParam.name}"), centerTitle: true),
+      appBar: AppBar(title: Text("Detail Surah "), centerTitle: true),
       body: ListView(
         children: [
           Card(
@@ -21,16 +20,16 @@ class DetailView extends GetView<DetailController> {
               child: Column(
                 children: [
                   Text(
-                    "${dataParam.name.toUpperCase()}",
+                    "${dataParameter.name.transliteration.id}",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    "( ${dataParam.nameTranslations.id.toUpperCase()} )",
+                    "(${dataParameter.name.translation.id})",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    "${dataParam.numberOfAyah} Ayat || ${dataParam.type}",
+                    "${dataParameter.numberOfVerses} Ayat || ${dataParameter.revelation.id}",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -39,18 +38,20 @@ class DetailView extends GetView<DetailController> {
           ),
           SizedBox(height: 10),
           Expanded(
-            child: FutureBuilder(
-              future: controller.DetailSurah(),
+            child: FutureBuilder<DetailSurah?>(
+              future: controller.getDetailSurah(),
               builder: (context, asyncSnapshot) {
                 if (asyncSnapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 }
 
                 if (!asyncSnapshot.hasData) {
-                  return Text("tidak ada data");
+                  return Center(child: Text("Data Tidak Ditemukan"));
                 }
 
-                DetailSurah detail = asyncSnapshot.data; //ambil data dari future builder
+                final detail = asyncSnapshot.data!; //detail surah
+
+               
 
                 return ListView.builder(
                   itemCount: detail.verses.length,
@@ -89,10 +90,7 @@ class DetailView extends GetView<DetailController> {
                                           icon: Icon(Icons.book),
                                         ),
                                         IconButton(
-                                          onPressed: () {
-                                            
-                                            
-                                          },
+                                          onPressed: () {},
                                           icon: Icon(Icons.play_arrow),
                                         ),
                                       ],
@@ -104,7 +102,19 @@ class DetailView extends GetView<DetailController> {
 
                                 /// TEKS ARAB (AMAN & CANTIK)
                                 Text(
-                                  detail.verses[index].text,
+                                  "${detail.verses[index].text.arab}",
+                                  textAlign: TextAlign.right,
+                                  textDirection: TextDirection.rtl,
+                                  softWrap: true,
+                                  overflow: TextOverflow.visible,
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    height: 2, // jarak antar baris biar lega
+                                  ),
+                                ),
+                                /// TEKS ARAB (AMAN & CANTIK)
+                                Text(
+                                  "${detail.verses[index].text.transliteration.en}",
                                   textAlign: TextAlign.right,
                                   textDirection: TextDirection.rtl,
                                   softWrap: true,
@@ -119,13 +129,12 @@ class DetailView extends GetView<DetailController> {
 
                                 /// TERJEMAHAN
                                 Text(
-                                  detail.verses[index].translationId,
+                                  "${detail.verses[index].translation.id}",
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.grey[700],
                                   ),
                                 ),
-                                SizedBox(height: 20),
                               ],
                             ),
                           ),

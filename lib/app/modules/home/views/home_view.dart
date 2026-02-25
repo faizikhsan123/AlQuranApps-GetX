@@ -23,7 +23,7 @@ class HomeView extends GetView<HomeController> {
 
       body: DefaultTabController(
         //body dibungkus default tab controller agar tab bar berjalan
-        length: 3, //jumlah tab bar
+        length: 2,
         child: Padding(
           padding: const EdgeInsets.all(22),
           child: Column(
@@ -129,7 +129,6 @@ class HomeView extends GetView<HomeController> {
                 tabs: [
                   //widget Tabbar
                   Tab(text: "Surah"),
-                  Tab(text: "Juz"),
                   Tab(text: "Bookmark"),
                 ],
               ),
@@ -164,14 +163,14 @@ class HomeView extends GetView<HomeController> {
                               leading: CircleAvatar(
                                 child: Text("${index + 1}"),
                               ),
-                              title: Text("${surah.name}"),
+                              title: Text("${surah.name.transliteration.id}"),
                               subtitle: Text(
-                                "${surah.numberOfAyah} | ${surah.type}",
+                                "${surah.numberOfVerses} || ${surah.revelation.id}",
                               ),
                               trailing: Text(
-                                "${surah.nameTranslations.ar}",
+                                "${surah.name.short}",
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -180,7 +179,6 @@ class HomeView extends GetView<HomeController> {
                         );
                       },
                     ),
-                    Center(child: Text("Juz")),
                     Center(child: Text("Bookmark")),
                   ],
                 ),
