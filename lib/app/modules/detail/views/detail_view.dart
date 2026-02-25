@@ -49,7 +49,7 @@ class DetailView extends GetView<DetailController> {
                   return Center(child: Text("Data Tidak Ditemukan"));
                 }
 
-                final detail = asyncSnapshot.data!; //detail surah
+                final detail = asyncSnapshot.data!; 
 
                
 
@@ -74,7 +74,7 @@ class DetailView extends GetView<DetailController> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                /// HEADER (Nomor + Tombol)
+                                
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -90,7 +90,10 @@ class DetailView extends GetView<DetailController> {
                                           icon: Icon(Icons.book),
                                         ),
                                         IconButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            //jalnakan audio dan kirim parameter
+                                            controller.playAudio("${detail.verses[index].audio.primary}");
+                                          },
                                           icon: Icon(Icons.play_arrow),
                                         ),
                                       ],
@@ -100,7 +103,7 @@ class DetailView extends GetView<DetailController> {
 
                                 SizedBox(height: 20),
 
-                                /// TEKS ARAB (AMAN & CANTIK)
+                                
                                 Text(
                                   "${detail.verses[index].text.arab}",
                                   textAlign: TextAlign.right,
@@ -109,10 +112,10 @@ class DetailView extends GetView<DetailController> {
                                   overflow: TextOverflow.visible,
                                   style: TextStyle(
                                     fontSize: 24,
-                                    height: 2, // jarak antar baris biar lega
+                                    height: 2, 
                                   ),
                                 ),
-                                /// TEKS ARAB (AMAN & CANTIK)
+                                
                                 Text(
                                   "${detail.verses[index].text.transliteration.en}",
                                   textAlign: TextAlign.right,
@@ -121,13 +124,13 @@ class DetailView extends GetView<DetailController> {
                                   overflow: TextOverflow.visible,
                                   style: TextStyle(
                                     fontSize: 24,
-                                    height: 2, // jarak antar baris biar lega
+                                    height: 2, 
                                   ),
                                 ),
 
                                 SizedBox(height: 20),
 
-                                /// TERJEMAHAN
+                                
                                 Text(
                                   "${detail.verses[index].translation.id}",
                                   style: TextStyle(
