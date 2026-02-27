@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:quranapps_getx/app/data/models/Juz.dart';
 import 'package:quranapps_getx/app/data/models/Surah.dart';
 import 'package:quranapps_getx/app/routes/app_pages.dart';
 
@@ -15,15 +16,14 @@ class HomeView extends GetView<HomeController> {
         centerTitle: true,
         actions: [
           IconButton(
-            onPressed: () => Get.toNamed(Routes.CARI), //ke halaman cari
+            onPressed: () => Get.toNamed(Routes.CARI),
             icon: Icon(Icons.search),
           ),
         ],
       ),
 
       body: DefaultTabController(
-        //body dibungkus default tab controller agar tab bar berjalan
-        length: 2,
+        length: 3,
         child: Padding(
           padding: const EdgeInsets.all(22),
           child: Column(
@@ -45,13 +45,10 @@ class HomeView extends GetView<HomeController> {
                 shadowColor: const Color.fromARGB(255, 224, 128, 225),
                 color: Colors.transparent,
                 child: InkWell(
-                  //agar container bisa di klik
                   borderRadius: BorderRadius.circular(15),
 
                   onTap: () {
-                    Get.toNamed(
-                      Routes.LAST_READ,
-                    ); //arahkan ke halaman last read
+                    Get.toNamed(Routes.LAST_READ);
                   },
                   child: Container(
                     child: Stack(
@@ -108,11 +105,7 @@ class HomeView extends GetView<HomeController> {
                     ),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: [
-                          //warna gradient
-                          Colors.purple, //warna pertama
-                          Colors.pink, //warna kedua
-                        ],
+                        colors: [Colors.purple, Colors.pink],
                       ),
                       borderRadius: BorderRadius.circular(15),
                     ),
@@ -130,13 +123,13 @@ class HomeView extends GetView<HomeController> {
                   //widget Tabbar
                   Tab(text: "Surah"),
 
+                  Tab(text: "JUZ"),
+
                   Tab(text: "Bookmark"),
                 ],
               ),
               Expanded(
-                //isi tab bar
                 child: TabBarView(
-                  //tab bar view harus dibugkus dengan expanded agar tab bar view berjalan
                   children: [
                     FutureBuilder(
                       future: controller.getSurah(),
@@ -180,6 +173,25 @@ class HomeView extends GetView<HomeController> {
                         );
                       },
                     ),
+
+                    //juz
+                    //karena api juz tidak ada maka kita generate sendiri
+                    ListView.builder(
+                      itemCount: 30,
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          onTap: () {
+                            Get.toNamed(
+                              Routes.DETAIL_JUZ,
+                              arguments: index + 1, // kirim nomor juz
+                            );
+                          },
+                          leading: CircleAvatar(child: Text("${index + 1}")),
+                          title: Text("Juz ${index + 1}"),
+                        );
+                      },
+                    ),
+
                     Center(child: Text("BOOkMark")),
                   ],
                 ),

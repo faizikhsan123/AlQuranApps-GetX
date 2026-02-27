@@ -8,6 +8,7 @@ abstract class Routes {
   static const DETAIL = _Paths.DETAIL;
   static const CARI = _Paths.CARI;
   static const LAST_READ = _Paths.LAST_READ;
+  static const DETAIL_JUZ = _Paths.DETAIL_JUZ;
 }
 
 abstract class _Paths {
@@ -17,4 +18,5 @@ abstract class _Paths {
   static const DETAIL = '/detail';
   static const CARI = '/cari';
   static const LAST_READ = '/last-read';
+  static const DETAIL_JUZ = '/detail-juz';
 }
