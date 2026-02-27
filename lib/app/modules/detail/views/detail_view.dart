@@ -49,7 +49,7 @@ class DetailView extends GetView<DetailController> {
                   return Center(child: Text("Data Tidak Ditemukan"));
                 }
 
-                final detail = asyncSnapshot.data!;
+                final detail = asyncSnapshot.data!; //detail surah
 
                 return ListView.builder(
                   itemCount: detail.verses.length,
@@ -72,6 +72,7 @@ class DetailView extends GetView<DetailController> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
+                                /// HEADER (Nomor + Tombol)
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
@@ -80,84 +81,88 @@ class DetailView extends GetView<DetailController> {
                                       radius: 18,
                                       child: Text("${index + 1}"),
                                     ),
-                                    Obx(
-                                      () => Row(
-                                        children: [
-                                          IconButton(
-                                            onPressed: () {},
-                                            icon: Icon(Icons.book),
-                                          ),
-                                          kondisiAudio.value == 'stop'
-                                              ? IconButton(
-                                                  onPressed: () {
-                                                    //kondisi stop -> play
-                                                    //kondisi play -> stop dan pause
-                                                    //kondisi pause -> stop dan resume
-                                                    controller.playAudio(
-                                                      "${detail.verses[index].audio.primary}",
-                                                    );
-                                                  },
-                                                  icon: Icon(Icons.play_arrow),
-                                                )
-                                              : Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    kondisiAudio.value == 'play'
-                                                        ? IconButton( //kondisi pause
-                                                            onPressed: () {
-                                                              controller.pauseAudio();
-                                                            },
-                                                            icon: Icon(
-                                                              Icons.pause,
-                                                            ),
-                                                          )
-                                                        : IconButton(
-                                                            //kondisi resume
-                                                            onPressed: () {
-                                                              controller.resumeAudio();
-                                                            },
-                                                            icon: Icon(
-                                                              Icons.play_arrow,
-                                                            ),
-                                                          ),
-                                                    IconButton(
-                                                      //kondisi stop
-                                                      onPressed: () {
-                                                        controller.stopAudio();
-                                                      },
-                                                      icon: Icon(Icons.stop),
-                                                    ),
-                                                  ],
-                                                ),
-                                        ],
-                                      ),
+                                    GetBuilder<DetailController>(
+                                      builder: (controller) {
+                                        final isThisPlaying =
+                                            controller.playingIndex == index;
+                                        final isPlaying =
+                                            controller.player.playing;
+
+                                        return Row(
+                                          children: [
+                                            IconButton(
+                                              icon: Icon(Icons.book),
+                                              onPressed: () {},
+                                            ),
+
+                                            /// kalau ayat ini sedang diputar
+                                            if (isThisPlaying && isPlaying)
+                                              IconButton(
+                                                icon: Icon(Icons.pause),
+                                                onPressed: () {
+                                                  controller.pauseAudio();
+                                                },
+                                              )
+                                            else
+                                              IconButton(
+                                                icon: Icon(Icons.play_arrow),
+                                                onPressed: () {
+                                                  controller.playAudio(
+                                                    detail
+                                                        .verses[index]
+                                                        .audio
+                                                        .primary,
+                                                    index,
+                                                  );
+                                                },
+                                              ),
+
+                                            /// tombol stop hanya muncul kalau ayat ini aktif
+                                            if (isThisPlaying)
+                                              IconButton(
+                                                icon: Icon(Icons.stop),
+                                                onPressed: () {
+                                                  controller.stopAudio();
+                                                },
+                                              ),
+                                          ],
+                                        );
+                                      },
                                     ),
                                   ],
                                 ),
 
                                 SizedBox(height: 20),
 
+                                /// TEKS ARAB (AMAN & CANTIK)
                                 Text(
                                   "${detail.verses[index].text.arab}",
                                   textAlign: TextAlign.right,
                                   textDirection: TextDirection.rtl,
                                   softWrap: true,
                                   overflow: TextOverflow.visible,
-                                  style: TextStyle(fontSize: 24, height: 2),
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    height: 2, // jarak antar baris biar lega
+                                  ),
                                 ),
 
+                                /// TEKS ARAB (AMAN & CANTIK)
                                 Text(
                                   "${detail.verses[index].text.transliteration.en}",
                                   textAlign: TextAlign.right,
                                   textDirection: TextDirection.rtl,
                                   softWrap: true,
                                   overflow: TextOverflow.visible,
-                                  style: TextStyle(fontSize: 24, height: 2),
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    height: 2, // jarak antar baris biar lega
+                                  ),
                                 ),
 
                                 SizedBox(height: 20),
 
+                                /// TERJEMAHAN
                                 Text(
                                   "${detail.verses[index].translation.id}",
                                   style: TextStyle(

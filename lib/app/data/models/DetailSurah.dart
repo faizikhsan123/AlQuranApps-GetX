@@ -15,6 +15,7 @@ class DetailSurah {
   DetailSurahTafsir tafsir;
   dynamic preBismillah;
   List<Verse> verses;
+  String kondisiAudio = 'stop';
 
   DetailSurah({
     required this.number,
@@ -25,6 +26,7 @@ class DetailSurah {
     required this.tafsir,
     required this.preBismillah,
     required this.verses,
+    required this.kondisiAudio,
   });
 
   factory DetailSurah.fromJson(Map<String, dynamic> json) => DetailSurah(
@@ -39,6 +41,7 @@ class DetailSurah {
             ? []
             : List<Verse>.from(
                 json["verses"].map((x) => Verse.fromJson(x))),
+        kondisiAudio: json["kondisiAudio"] ?? "",
       );
 
   Map<String, dynamic> toJson() => {
@@ -50,6 +53,7 @@ class DetailSurah {
         "tafsir": tafsir.toJson(),
         "preBismillah": preBismillah,
         "verses": List<dynamic>.from(verses.map((x) => x.toJson())),
+        "kondisiAudio": kondisiAudio,
       };
 }
 

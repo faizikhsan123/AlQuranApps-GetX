@@ -1,96 +1,77 @@
 import 'dart:convert';
-
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:just_audio/just_audio.dart';
 import 'package:quranapps_getx/app/data/models/DetailSurah.dart';
 import 'package:quranapps_getx/app/data/models/Surah.dart';
 
-DetailSurah? detail;
-final player = AudioPlayer(); 
-
-RxString kondisiAudio = 'stop'.obs; //kondisi awal audio
-
 class DetailController extends GetxController {
   Surah idParam = Get.arguments;
 
+  final AudioPlayer player = AudioPlayer();
+
+  DetailSurah? detail;
+  int? playingIndex; // ayat mana yang sedang diputar
+
   Future<DetailSurah?> getDetailSurah() async {
-    String url = 'https://quran-api-id.vercel.app/surah/${idParam.number}';
+    String url =
+        'https://quran-api-id.vercel.app/surah/${idParam.number}';
 
     var response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-
       final detailsurah = data["data"];
 
-      final detail = DetailSurah.fromJson(detailsurah);
-
+      detail = DetailSurah.fromJson(detailsurah);
+      update();
       return detail;
     }
 
     return null;
   }
 
-  Future playAudio(String url) async {
+  Future playAudio(String url, int index) async {
     try {
-      kondisiAudio.value = 'play';
-      await player.setUrl(url);
+      if (playingIndex != index) {
+        await player.setUrl(url);
+        playingIndex = index;
+      }
+
       await player.play();
-      kondisiAudio.value = 'play';
-    } on PlayerException catch (e) {
-      Get.defaultDialog(title: 'Error', middleText: '"Error code: ${e.code}"');
-
-      Get.defaultDialog(
-        title: 'Error',
-        middleText: '"Error message: ${e.message}"',
-      );
-    } on PlayerInterruptedException catch (e) {
-      Get.defaultDialog(
-        title: 'Error',
-        middleText: '"Connection aborted: ${e.message}"',
-      );
+      update();
     } catch (e) {
-      Get.defaultDialog(title: 'Error', middleText: 'An error occured: $e');
+      Get.defaultDialog(title: 'Error', middleText: '$e');
     }
-    player.errorStream.listen((PlayerException e) {
-      print('Error code: ${e.code}');
-      print('Error message: ${e.message}');
-      print('AudioSource index: ${e.index}');
-    });
-  }
-
-  Future stopAudio() async {
-    //stop audio
-    await player.stop();
-    kondisiAudio.value = 'stop';
   }
 
   Future pauseAudio() async {
-    //pause audio
     await player.pause();
-    kondisiAudio.value = 'pause';
+    update();
   }
 
-  Future resumeAudio() async {
-    //pause audio
-    kondisiAudio.value = 'play';
-    await player.play();
+  Future stopAudio() async {
+    await player.stop();
+    playingIndex = null;
+    update();
   }
 
   @override
   void onInit() {
-    getDetailSurah();
-
-    // TODO: implement onInit
     super.onInit();
+
+    /// 🔥 LISTENER REALTIME
+    player.playerStateStream.listen((state) {
+      if (state.processingState == ProcessingState.completed) {
+        playingIndex = null;
+      }
+      update();
+    });
   }
 
   @override
   void onClose() {
-    player.stop();
     player.dispose();
-    getDetailSurah();
     super.onClose();
   }
 }
