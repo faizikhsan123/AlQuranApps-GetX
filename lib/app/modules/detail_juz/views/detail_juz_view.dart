@@ -6,12 +6,15 @@ import '../../../data/models/Juz.dart';
 class DetailJuzView extends GetView<DetailJuzController> {
   @override
   Widget build(BuildContext context) {
-    final int nomorJuz = Get.arguments; //ambil argument
+    final int nomorJuz = Get.arguments;
 
     return Scaffold(
-      appBar: AppBar(title: Text("Detail Juz $nomorJuz "), centerTitle: true),
+      appBar: AppBar(
+        title: Text("Detail Juz $nomorJuz"),
+        centerTitle: true,
+      ),
       body: FutureBuilder<Juz?>(
-        future: controller.getJuz(nomorJuz), //panggil fungsi getJuz(),
+        future: controller.getJuz(nomorJuz),
         builder: (context, asyncSnapshot) {
           if (asyncSnapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -21,75 +24,129 @@ class DetailJuzView extends GetView<DetailJuzController> {
             return Center(child: Text("Data Tidak Ditemukan"));
           }
 
-          final Juz = asyncSnapshot.data!; //detail surah
+          final juz = asyncSnapshot.data!;
 
           return ListView(
             children: [
+              // ── INFO JUZ ──────────────────────────────────────
               Card(
+                margin: EdgeInsets.all(12),
                 child: Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
-                      Text(
-                        Juz.juzStartInfo ?? "",
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        Juz.juzEndInfo ?? "",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
+                      Text(juz.juzStartInfo ?? "",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text(juz.juzEndInfo ?? "",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
                       SizedBox(height: 10),
-                      Text(
-                        "Total Ayat : ${Juz.totalVerses}",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
+                      Text("Total Ayat : ${juz.totalVerses}",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
               ),
-              SizedBox(height: 10),
 
+              // ── LIST AYAT ─────────────────────────────────────
               ListView.builder(
-                itemCount: Juz.verses.length,
+                itemCount: juz.verses.length,
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
+                  final verse = juz.verses[index];
+                  final isFirstAyahOfSurah = verse.number.inSurah == 1;
+
                   return Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+
+                      // ── HEADER SURAH (muncul kalau ayat ke-1 surah baru) ──
+                      if (isFirstAyahOfSurah)
+                        Container(
+                          margin: EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 14),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Color(0xFF1B5E20), Color(0xFF388E3C)],
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.green.withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: Offset(0, 3),
+                              )
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              // Nomor surah dalam lingkaran
+                              CircleAvatar(
+                                radius: 20,
+                                backgroundColor: Colors.white24,
+                                child: Text(
+                                  "${verse.number.inQuran - verse.number.inSurah + 1}",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              // Nama surah (dari meta/data jika tersedia,
+                              // fallback pakai nomor ayat di Quran)
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    "Surah Baru",          // ← ganti dengan nama surah jika model menyimpannya
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Ayat ke-${verse.number.inQuran} Al-Qur'an",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      // ── CARD AYAT ──────────────────────────────
                       Card(
                         margin: EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 10,
-                        ),
+                            horizontal: 12, vertical: 6),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 20,
-                          ),
+                              horizontal: 16, vertical: 20),
                           child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.stretch,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              /// HEADER (Nomor + Tombol)
+                              // Header baris: nomor + tombol audio
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   CircleAvatar(
                                     radius: 18,
-                                    child: Text("${index + 1}"),
+                                    child: Text("${verse.number.inSurah}"),
                                   ),
                                   GetBuilder<DetailJuzController>(
-                                    builder: (controller) {
+                                    builder: (ctrl) {
                                       final isThisPlaying =
-                                          controller.playingIndex ==
-                                              index;
-                                      final isPlaying =
-                                          controller.player.playing;
+                                          ctrl.playingIndex == index;
+                                      final isPlaying = ctrl.player.playing;
 
                                       return Row(
                                         children: [
@@ -97,37 +154,23 @@ class DetailJuzView extends GetView<DetailJuzController> {
                                             icon: Icon(Icons.book),
                                             onPressed: () {},
                                           ),
-
-                                          /// kalau ayat ini sedang diputar
                                           if (isThisPlaying && isPlaying)
                                             IconButton(
                                               icon: Icon(Icons.pause),
-                                              onPressed: () {
-                                                controller.pauseAudio();
-                                              },
+                                              onPressed: ctrl.pauseAudio,
                                             )
                                           else
                                             IconButton(
-                                              icon:
-                                                  Icon(Icons.play_arrow),
-                                              onPressed: () {
-                                                controller.playAudio(
-                                                  Juz
-                                                      .verses[index]
-                                                      .audio
-                                                      .primary,
-                                                  index,
-                                                );
-                                              },
+                                              icon: Icon(Icons.play_arrow),
+                                              onPressed: () => ctrl.playAudio(
+                                                verse.audio.primary,
+                                                index,
+                                              ),
                                             ),
-
-                                          /// tombol stop hanya muncul kalau ayat ini aktif
                                           if (isThisPlaying)
                                             IconButton(
                                               icon: Icon(Icons.stop),
-                                              onPressed: () {
-                                                controller.stopAudio();
-                                              },
+                                              onPressed: ctrl.stopAudio,
                                             ),
                                         ],
                                       );
@@ -136,51 +179,43 @@ class DetailJuzView extends GetView<DetailJuzController> {
                                 ],
                               ),
 
-                              SizedBox(height: 20),
+                              SizedBox(height: 16),
 
-                              /// TEKS ARAB (AMAN & CANTIK)
+                              // Teks Arab
                               Text(
-                                "${Juz.verses[index].text.arab}",
+                                verse.text.arab,
                                 textAlign: TextAlign.right,
                                 textDirection: TextDirection.rtl,
-                                softWrap: true,
-                                overflow: TextOverflow.visible,
+                                style: TextStyle(fontSize: 24, height: 2),
+                              ),
+
+                              SizedBox(height: 8),
+
+                              // Transliterasi
+                              Text(
+                                verse.text.transliteration.en,
+                                textAlign: TextAlign.left,
                                 style: TextStyle(
-                                  fontSize: 24,
-                                  height:
-                                      2, // jarak antar baris biar lega
+                                  fontSize: 14,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.grey[600],
                                 ),
                               ),
 
-                              /// TEKS ARAB (AMAN & CANTIK)
-                              Text(
-                                "${Juz.verses[index].text.transliteration.en}",
-                                textAlign: TextAlign.right,
-                                textDirection: TextDirection.rtl,
-                                softWrap: true,
-                                overflow: TextOverflow.visible,
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  height:
-                                      2, // jarak antar baris biar lega
-                                ),
-                              ),
+                              SizedBox(height: 12),
 
-                              SizedBox(height: 20),
-
-                              /// TERJEMAHAN
+                              // Terjemahan
                               Text(
-                                "${Juz.verses[index].translation.id}",
+                                verse.translation.id,
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey[700],
-                                ),
+                                    fontSize: 16, color: Colors.grey[700]),
                               ),
                             ],
                           ),
                         ),
                       ),
-                      SizedBox(height: 40),
+
+                      SizedBox(height: 4),
                     ],
                   );
                 },

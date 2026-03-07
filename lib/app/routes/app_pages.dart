@@ -38,17 +38,17 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.CARI,
-      page: () =>  CariView(),
+      page: () => CariView(),
       binding: CariBinding(),
     ),
     GetPage(
       name: _Paths.LAST_READ,
-      page: () =>  LastReadView(),
+      page: () => LastReadView(),
       binding: LastReadBinding(),
     ),
     GetPage(
       name: _Paths.DETAIL_JUZ,
-      page: () =>  DetailJuzView(),
+      page: () => DetailJuzView(),
       binding: DetailJuzBinding(),
     ),
   ];

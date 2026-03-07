@@ -9,6 +9,7 @@ abstract class Routes {
   static const CARI = _Paths.CARI;
   static const LAST_READ = _Paths.LAST_READ;
   static const DETAIL_JUZ = _Paths.DETAIL_JUZ;
+  static const ELFANDIGAY = _Paths.ELFANDIGAY;
 }
 
 abstract class _Paths {
@@ -19,4 +20,5 @@ abstract class _Paths {
   static const CARI = '/cari';
   static const LAST_READ = '/last-read';
   static const DETAIL_JUZ = '/detail-juz';
+  static const ELFANDIGAY = '/elfandigay';
 }
